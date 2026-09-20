@@ -14,6 +14,7 @@ import { GalleryModule } from './gallery/gallery.module.js';
 import { SponsorsModule } from './sponsors/sponsors.module.js';
 import { AdminsModule } from './admins/admins.module.js';
 import { AuthModule } from './auth/auth.module.js';
+import { UploadsModule } from './uploads/uploads.module.js';
 
 
 
@@ -48,6 +49,7 @@ import { AuthModule } from './auth/auth.module.js';
     SponsorsModule,
     AdminsModule,
     AuthModule,
+    UploadsModule
   ],
   controllers: [AppController],
   providers: [AppService],
