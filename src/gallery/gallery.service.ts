@@ -1,3 +1,4 @@
+
 import {
   Injectable,
   NotFoundException,
@@ -19,6 +20,10 @@ import {
   CreateGalleryDto,
 } from './dto/create-gallery.dto.js';
 
+import {
+  UpdateGalleryDto,
+} from './dto/update-gallery.dto.js';
+
 @Injectable()
 export class GalleryService {
   constructor(
@@ -27,6 +32,7 @@ export class GalleryService {
       Repository<Gallery>,
   ) {}
 
+  // Create gallery item
   async create(dto: CreateGalleryDto) {
     const gallery =
       this.galleryRepository.create({
@@ -43,6 +49,7 @@ export class GalleryService {
     );
   }
 
+  // Get all gallery items
   async findAll() {
     return await this.galleryRepository.find({
       order: {
@@ -51,6 +58,7 @@ export class GalleryService {
     });
   }
 
+  // Get published gallery items
   async findPublished() {
     return await this.galleryRepository.find({
       where: {
@@ -62,6 +70,7 @@ export class GalleryService {
     });
   }
 
+  // Get gallery items by category
   async findByCategory(
     category: string,
   ) {
@@ -76,6 +85,7 @@ export class GalleryService {
     });
   }
 
+  // Get single gallery item
   async findOne(id: number) {
     const gallery =
       await this.galleryRepository.findOne({
@@ -92,4 +102,63 @@ export class GalleryService {
 
     return gallery;
   }
+
+  // Update gallery item
+  async update(
+    id: number,
+    dto: UpdateGalleryDto,
+  ) {
+    const gallery = await this.findOne(id);
+
+    if (dto.title !== undefined) {
+      gallery.title = dto.title;
+    }
+
+    if (dto.imageUrl !== undefined) {
+      gallery.imageUrl = dto.imageUrl;
+    }
+
+    if (dto.description !== undefined) {
+      gallery.description = dto.description;
+    }
+
+    if (dto.category !== undefined) {
+      gallery.category = dto.category;
+    }
+
+    if (dto.isPublished !== undefined) {
+      gallery.isPublished =
+        dto.isPublished;
+    }
+
+    return await this.galleryRepository.save(
+      gallery,
+    );
+  }
+
+  // Publish / Unpublish
+  async togglePublish(id: number) {
+    const gallery = await this.findOne(id);
+
+    gallery.isPublished =
+      !gallery.isPublished;
+
+    return await this.galleryRepository.save(
+      gallery,
+    );
+  }
+
+  // Delete gallery item
+  async remove(id: number) {
+    const gallery = await this.findOne(id);
+
+    await this.galleryRepository.remove(
+      gallery,
+    );
+
+    return {
+      message: 'Gallery item deleted successfully',
+    };
+  }
 }
+

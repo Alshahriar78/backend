@@ -1,9 +1,12 @@
+
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -15,7 +18,14 @@ import {
 import {
   CreateGalleryDto,
 } from './dto/create-gallery.dto.js';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+
+import {
+  UpdateGalleryDto,
+} from './dto/update-gallery.dto.js';
+
+import {
+  JwtAuthGuard,
+} from '../auth/jwt-auth.guard.js';
 
 @Controller('gallery')
 export class GalleryController {
@@ -31,9 +41,7 @@ export class GalleryController {
     @Body()
     dto: CreateGalleryDto,
   ) {
-    return this.galleryService.create(
-      dto,
-    );
+    return this.galleryService.create(dto);
   }
 
   // Get all gallery items
@@ -70,4 +78,51 @@ export class GalleryController {
   ) {
     return this.galleryService.findOne(id);
   }
+
+  // Update gallery item
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id')
+  update(
+    @Param(
+      'id',
+      ParseIntPipe,
+    )
+    id: number,
+    @Body()
+    dto: UpdateGalleryDto,
+  ) {
+    return this.galleryService.update(
+      id,
+      dto,
+    );
+  }
+
+  // Toggle publish / unpublish
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id/toggle-publish')
+  togglePublish(
+    @Param(
+      'id',
+      ParseIntPipe,
+    )
+    id: number,
+  ) {
+    return this.galleryService.togglePublish(
+      id,
+    );
+  }
+
+  // Delete gallery item
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  remove(
+    @Param(
+      'id',
+      ParseIntPipe,
+    )
+    id: number,
+  ) {
+    return this.galleryService.remove(id);
+  }
 }
+
