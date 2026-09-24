@@ -15,6 +15,10 @@ export class CreateAnnouncementDto {
   content: string;
 
   @IsOptional()
+  @IsString()
+  imageUrl?: string;
+
+  @IsOptional()
   @IsBoolean()
   isPublished?: boolean;
 }

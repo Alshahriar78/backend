@@ -1,5 +1,6 @@
 import {
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 
 import {
@@ -18,6 +19,10 @@ import {
   CreateAnnouncementDto,
 } from './dto/create-announcement.dto.js';
 
+import {
+  UpdateAnnouncementDto,
+} from './dto/update-announcement.dto.js';
+
 @Injectable()
 export class AnnouncementsService {
   constructor(
@@ -26,6 +31,7 @@ export class AnnouncementsService {
       Repository<Announcement>,
   ) {}
 
+  // Create announcement
   async create(
     dto: CreateAnnouncementDto,
   ) {
@@ -33,6 +39,7 @@ export class AnnouncementsService {
       this.announcementRepository.create({
         title: dto.title,
         content: dto.content,
+        imageUrl: dto.imageUrl,
         isPublished:
           dto.isPublished ?? true,
       });
@@ -42,6 +49,7 @@ export class AnnouncementsService {
     );
   }
 
+  // Get all announcements
   async findAll() {
     return await this.announcementRepository.find({
       order: {
@@ -50,6 +58,7 @@ export class AnnouncementsService {
     });
   }
 
+  // Get published announcements
   async findPublished() {
     return await this.announcementRepository.find({
       where: {
@@ -59,5 +68,79 @@ export class AnnouncementsService {
         createdAt: 'DESC',
       },
     });
+  }
+
+  // Get single announcement
+  async findOne(id: number) {
+    const announcement =
+      await this.announcementRepository.findOne({
+        where: { id },
+      });
+
+    if (!announcement) {
+      throw new NotFoundException(
+        'Announcement not found',
+      );
+    }
+
+    return announcement;
+  }
+
+  // Update announcement
+  async update(
+    id: number,
+    dto: UpdateAnnouncementDto,
+  ) {
+    const announcement =
+      await this.findOne(id);
+
+    if (dto.title !== undefined) {
+      announcement.title = dto.title;
+    }
+
+    if (dto.content !== undefined) {
+      announcement.content = dto.content;
+    }
+
+    if (dto.imageUrl !== undefined) {
+      announcement.imageUrl = dto.imageUrl;
+    }
+
+    if (dto.isPublished !== undefined) {
+      announcement.isPublished =
+        dto.isPublished;
+    }
+
+    return await this.announcementRepository.save(
+      announcement,
+    );
+  }
+
+  // Toggle publish / unpublish
+  async togglePublish(id: number) {
+    const announcement =
+      await this.findOne(id);
+
+    announcement.isPublished =
+      !announcement.isPublished;
+
+    return await this.announcementRepository.save(
+      announcement,
+    );
+  }
+
+  // Delete announcement
+  async remove(id: number) {
+    const announcement =
+      await this.findOne(id);
+
+    await this.announcementRepository.remove(
+      announcement,
+    );
+
+    return {
+      message:
+        'Announcement deleted successfully',
+    };
   }
 }
