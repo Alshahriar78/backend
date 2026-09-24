@@ -8,7 +8,7 @@ async function bootstrap() {
   app.enableCors({
    origin: [
     'http://localhost:5173',
-    'https://mokamtola-efootball-tournament.netlify.app/',
+    'https://mokamtola-efootball-tournament.netlify.app',
     'https://YOUR-NETLIFY-SITE.netlify.app',
   ],
 });
